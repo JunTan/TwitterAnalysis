@@ -27,7 +27,8 @@ import re
 import scipy.io
 from stop_words import get_stop_words
 
-cachedStopWords = get_stop_words('english') + ["http", "https"]
+cachedStopWords = get_stop_words('english') + ["co", "http", "https", "i", "my", 
+                  "our", "we", "you", "amp", "t"]
 
 NUM_TEST_EXAMPLES = 10000
 
@@ -114,6 +115,9 @@ def freq_record_feature(text, freq):
 def freq_out_feature(text, freq):
     return float(freq['out'])
 
+def freq_feature(text, freq, key_word):
+    return float(freq[key_word])
+
 # Features that look for certain characters
 def freq_semicolon_feature(text, freq):
     return text.count(';')
@@ -141,6 +145,7 @@ def freq_and_feature(text, freq):
 # Generates a feature vector
 def generate_feature_vector(text, freq):
     feature = []
+    '''
     feature.append(freq_pain_feature(text, freq))
     feature.append(freq_private_feature(text, freq))
     feature.append(freq_bank_feature(text, freq))
@@ -173,6 +178,10 @@ def generate_feature_vector(text, freq):
     feature.append(freq_para_feature(text, freq))
     feature.append(freq_bracket_feature(text, freq))
     feature.append(freq_and_feature(text, freq))
+    '''
+    key_words = ['abortion','prolife','s','rt','life','pro','baby','via','women']
+    for key_word in key_words:
+        feature.append(freq_feature(text, freq, key_word))
 
     # --------- Add your own features here ---------
     # Make sure type is int or float
@@ -192,6 +201,7 @@ def generate_design_matrix(filenames):
             words = re.findall(r'\w+', text)
             word_freq = defaultdict(int) # Frequency of all words
             for word in words:
+                word = word.lower()
                 word_freq[word] += 1
                 if word not in cachedStopWords:
                     whole_freq[word] += 1
@@ -209,12 +219,18 @@ def generate_design_matrix(filenames):
 # DO NOT MODIFY ANYTHING BELOW
 
 prolife_filenames = glob.glob(BASE_DIR + PROLIFE_DIR + '*.txt')
-print("prolife")
-spam_design_matrix = generate_design_matrix(prolife_filenames)
+print("prolife-----------------")
+prolife_design_matrix = generate_design_matrix(prolife_filenames)
+prochoice_filenames = glob.glob(BASE_DIR + PROCHOICE_DIR + '*.txt')
+print("prochoice---------------")
+prochoice_design_matrix = generate_design_matrix(prochoice_filenames)
+X = prolife_design_matrix + prochoice_design_matrix
+Y = [1]*len(prolife_design_matrix) + [0]*len(prochoice_design_matrix)
+file_dict = {}
+file_dict['training_data'] = X
+file_dict['training_labels'] = Y
+scipy.io.savemat('abortion.mat', file_dict, do_compression=True)
 '''
-ham_filenames = glob.glob(BASE_DIR + HAM_DIR + '*.txt')
-print("ham")
-ham_design_matrix = generate_design_matrix(ham_filenames)
 # Important: the test_filenames must be in numerical order as that is the
 # order we will be evaluating your classifier
 test_filenames = [BASE_DIR + TEST_DIR + str(x) + '.txt' for x in range(NUM_TEST_EXAMPLES)]
