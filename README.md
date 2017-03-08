@@ -7,5 +7,5 @@ git commit -m "put meaningful things make changes you made"
 git push origin master
 
 
-# 
+# get updated files
 git pull origin master
