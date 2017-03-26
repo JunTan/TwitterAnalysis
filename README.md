@@ -1,11 +1,15 @@
-# this update the new changes to github repo
-git add featurize.py
-git add repo you want to update
+# Package needed
 
-git commit -m "put meaningful things make changes you made"
+`pip install stop-words`
 
-git push origin master
+`pip install scipy`
 
+# Featurize.py
+This file generates a design matrix for prolife group, prochoice group and individual group and stores it in the 'abortion.mat'. Running this file also outputs a list of most frequent words from prolife and prochoice group. To avoid the output flushs your screen, you can redirect the output to a file (eg. word.txt) by doing 
 
-# get updated files
-git pull origin master
+`python featurize.py > word.txt`
+
+Each row of the design matrix corresponding a sample(user). Each column of the design matrix is the word frequency of a particular word.
+
+To change the features, change the `key_words` list in the `generate_feature_vector` function
+
