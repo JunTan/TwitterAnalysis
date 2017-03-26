@@ -35,86 +35,11 @@ NUM_TEST_EXAMPLES = 10000
 BASE_DIR = './'
 PROLIFE_DIR = 'prolife/'
 PROCHOICE_DIR = 'prochoice/'
-TEST_DIR = 'test/'
+INDIVIDUAL_DIR = 'individual/'
 
 # ************* Features *************
 
 # Features that look for certain words
-def freq_pain_feature(text, freq):
-    return float(freq['pain'])
-
-def freq_private_feature(text, freq):
-    return float(freq['private'])
-
-def freq_bank_feature(text, freq):
-    return float(freq['bank'])
-
-def freq_money_feature(text, freq):
-    return float(freq['money'])
-
-def freq_drug_feature(text, freq):
-    return float(freq['drug'])
-
-def freq_spam_feature(text, freq):
-    return float(freq['spam'])
-
-def freq_prescription_feature(text, freq):
-    return float(freq['prescription'])
-
-def freq_creative_feature(text, freq):
-    return float(freq['creative'])
-
-def freq_height_feature(text, freq):
-    return float(freq['height'])
-
-def freq_featured_feature(text, freq):
-    return float(freq['featured'])
-
-def freq_differ_feature(text, freq):
-    return float(freq['differ'])
-
-def freq_width_feature(text, freq):
-    return float(freq['width'])
-
-def freq_other_feature(text, freq):
-    return float(freq['other'])
-
-def freq_energy_feature(text, freq):
-    return float(freq['energy'])
-
-def freq_business_feature(text, freq):
-    return float(freq['business'])
-
-def freq_message_feature(text, freq):
-    return float(freq['message'])
-
-def freq_volumes_feature(text, freq):
-    return float(freq['volumes'])
-
-def freq_revision_feature(text, freq):
-    return float(freq['revision'])
-
-def freq_path_feature(text, freq):
-    return float(freq['path'])
-
-def freq_meter_feature(text, freq):
-    return float(freq['meter'])
-
-def freq_memo_feature(text, freq):
-    return float(freq['memo'])
-
-def freq_planning_feature(text, freq):
-    return float(freq['planning'])
-
-def freq_pleased_feature(text, freq):
-    return float(freq['pleased'])
-
-def freq_record_feature(text, freq):
-    return float(freq['record'])
-
-def freq_out_feature(text, freq):
-    return float(freq['out'])
-
 def freq_feature(text, freq, key_word):
     return float(freq[key_word])
 
@@ -145,40 +70,6 @@ def freq_and_feature(text, freq):
 # Generates a feature vector
 def generate_feature_vector(text, freq):
     feature = []
-    '''
-    feature.append(freq_pain_feature(text, freq))
-    feature.append(freq_private_feature(text, freq))
-    feature.append(freq_bank_feature(text, freq))
-    feature.append(freq_money_feature(text, freq))
-    feature.append(freq_drug_feature(text, freq))
-    feature.append(freq_spam_feature(text, freq))
-    feature.append(freq_prescription_feature(text, freq))
-    feature.append(freq_creative_feature(text, freq))
-    feature.append(freq_height_feature(text, freq))
-    feature.append(freq_featured_feature(text, freq))
-    feature.append(freq_differ_feature(text, freq))
-    feature.append(freq_width_feature(text, freq))
-    feature.append(freq_other_feature(text, freq))
-    feature.append(freq_energy_feature(text, freq))
-    feature.append(freq_business_feature(text, freq))
-    feature.append(freq_message_feature(text, freq))
-    feature.append(freq_volumes_feature(text, freq))
-    feature.append(freq_revision_feature(text, freq))
-    feature.append(freq_path_feature(text, freq))
-    feature.append(freq_meter_feature(text, freq))
-    feature.append(freq_memo_feature(text, freq))
-    feature.append(freq_planning_feature(text, freq))
-    feature.append(freq_pleased_feature(text, freq))
-    feature.append(freq_record_feature(text, freq))
-    feature.append(freq_out_feature(text, freq))
-    feature.append(freq_semicolon_feature(text, freq))
-    feature.append(freq_dollar_feature(text, freq))
-    feature.append(freq_sharp_feature(text, freq))
-    feature.append(freq_exclamation_feature(text, freq))
-    feature.append(freq_para_feature(text, freq))
-    feature.append(freq_bracket_feature(text, freq))
-    feature.append(freq_and_feature(text, freq))
-    '''
     key_words = ['abortion','prolife','s','rt','life','pro','baby','via','women']
     for key_word in key_words:
         feature.append(freq_feature(text, freq, key_word))
@@ -224,11 +115,15 @@ prolife_design_matrix = generate_design_matrix(prolife_filenames)
 prochoice_filenames = glob.glob(BASE_DIR + PROCHOICE_DIR + '*.txt')
 print("prochoice---------------")
 prochoice_design_matrix = generate_design_matrix(prochoice_filenames)
+inidividual_filenames = glob.glob(BASE_DIR + INDIVIDUAL_DIR + '*.txt')
+inidividual_design_matrix = generate_design_matrix(inidividual_filenames)
+
 X = prolife_design_matrix + prochoice_design_matrix
 Y = [1]*len(prolife_design_matrix) + [0]*len(prochoice_design_matrix)
 file_dict = {}
 file_dict['training_data'] = X
 file_dict['training_labels'] = Y
+file_dict['inidividual_data'] = inidividual_design_matrix
 scipy.io.savemat('abortion.mat', file_dict, do_compression=True)
 '''
 # Important: the test_filenames must be in numerical order as that is the
