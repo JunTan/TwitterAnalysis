@@ -13,3 +13,13 @@ Each row of the design matrix corresponding a sample(user). Each column of the d
 
 To change the features, change the `key_words` list in the `generate_feature_vector` function
 
+# Read .mat file
+```
+import scipy.io as sio
+
+data_path = 'abortion.mat'
+
+data = sio.loadmat(train_data_path)
+
+data['training_data'] #load the training_data
+```
