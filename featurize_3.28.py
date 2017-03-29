@@ -228,7 +228,7 @@ individual_filenames = glob.glob(BASE_DIR + INDIVIDUAL_DIR + '*.txt')
 file_dict  = {}
 file_dict['indiv_stance'] = indiv_u_stance
 file_dict['train_stance'] = train_u_stance
-file_dict['individual_account order'] = [s.split('/')[2].split('.')[0] for s in individual_filenames]
+file_dict['individual_account order'] = [s.split('/')[1].split('\\')[1].split('.')[0] for s in individual_filenames]
 scipy.io.savemat('stance.mat', file_dict, do_compression=True)
 
 '''
