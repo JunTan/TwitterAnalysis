@@ -168,6 +168,7 @@ def feature_matrix_generator(feat_words, mat_name):
     scipy.io.savemat(mat_name+'.mat', file_dict, do_compression=True)
     return
 
+feature_matrix_generator(feat_words, '2bags')
 # Commented out code below is using overlapping bags which yielded insignificant results
 """
 feature_matrix_generator(feat_words, '2bags')
