@@ -26,6 +26,12 @@ import glob
 import re
 import scipy.io
 from stop_words import get_stop_words
+from csv import DictReader
+
+with open("select_word.csv") as f:
+    key_words = [row["word"].strip() for row in DictReader(f)]
+
+key_words = set(key_words)
 
 cachedStopWords = get_stop_words('english') + ["co", "http", "https", "i", "my", 
                   "our", "we", "you", "amp", "t"]
@@ -70,7 +76,7 @@ def freq_and_feature(text, freq):
 # Generates a feature vector
 def generate_feature_vector(text, freq):
     feature = []
-    key_words = ['abortion','prolife','s','rt','life','pro','baby','via','women']
+    
     for key_word in key_words:
         feature.append(freq_feature(text, freq, key_word))
 
@@ -81,7 +87,7 @@ def generate_feature_vector(text, freq):
 
 # This method generates a design matrix with a list of filenames
 # Each file is a single training example
-def generate_design_matrix(filenames):
+def generate_design_matrix(filenames, output_wordcnt = True):
     design_matrix = []
     whole_freq = defaultdict(int)
 
@@ -100,31 +106,35 @@ def generate_design_matrix(filenames):
             # Create a feature vector
             feature_vector = generate_feature_vector(text, word_freq)
             design_matrix.append(feature_vector)
-    d = Counter(whole_freq)
-    # Create a feature vector
-    for k, v in d.most_common(100):
-        print (k, v)
+
+    if output_wordcnt:
+        d = Counter(whole_freq)
+        # Create a feature vector
+        for k, v in d.most_common(100):
+            print (k, ",", v)
     return design_matrix
 
 # ************** Script starts here **************
 # DO NOT MODIFY ANYTHING BELOW
 
+print("word, count")
 prolife_filenames = glob.glob(BASE_DIR + PROLIFE_DIR + '*.txt')
-print("prolife-----------------")
 prolife_design_matrix = generate_design_matrix(prolife_filenames)
+
 prochoice_filenames = glob.glob(BASE_DIR + PROCHOICE_DIR + '*.txt')
-print("prochoice---------------")
 prochoice_design_matrix = generate_design_matrix(prochoice_filenames)
+
 inidividual_filenames = glob.glob(BASE_DIR + INDIVIDUAL_DIR + '*.txt')
-inidividual_design_matrix = generate_design_matrix(inidividual_filenames)
+inidividual_design_matrix = generate_design_matrix(inidividual_filenames, False)
 
 X = prolife_design_matrix + prochoice_design_matrix
 Y = [1]*len(prolife_design_matrix) + [0]*len(prochoice_design_matrix)
 file_dict = {}
 file_dict['training_data'] = X
 file_dict['training_labels'] = Y
-file_dict['inidividual_data'] = inidividual_design_matrix
-scipy.io.savemat('abortion.mat', file_dict, do_compression=True)
+file_dict['individual_data'] = inidividual_design_matrix
+file_dict['individual_account_order'] = [s.split('/')[2].split('.')[0] for s in inidividual_filenames]
+scipy.io.savemat('classifier.mat', file_dict, do_compression=True)
 '''
 # Important: the test_filenames must be in numerical order as that is the
 # order we will be evaluating your classifier
