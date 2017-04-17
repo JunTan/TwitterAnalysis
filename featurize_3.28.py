@@ -198,6 +198,7 @@ stance = 2*(0.5-M)
 """
 
 #Modified bags so that thee is no overlap, for individuals:
+#Stance negative represents prolife and positive prochoice.
 u_data = scipy.io.loadmat('unique_feat_words.mat')
 u_data_indiv = u_data['individual_data']
 u_data_train = u_data['training_data']
