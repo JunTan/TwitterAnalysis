@@ -6,6 +6,8 @@ import scipy.io
 from scipy.spatial.distance import pdist
 from scipy.cluster.hierarchy import fcluster
 from numpy import genfromtxt
+import pandas as pd
+import csv
 
 data = scipy.io.loadmat('2bags.mat')
 indiv_data = data['individual_data']
@@ -61,19 +63,37 @@ classifier_stance = classifier_stance.flatten()
 classifier_stance = 2*(classifier_stance-0.5)
 
 final_stance = 0.5*(bow_stance + classifier_stance)
+np.savetxt('final_stance.csv', final_stance, delimiter=',')
+
+#people list
+people = pd.read_csv('proportion.csv')
+people = people['User']
 
 #diversity
 diversity = genfromtxt('proportion.csv', delimiter=',',usecols=2, skip_header=1)
 
+cluster_dict = {}
 plt.figure(1)
 for i in range(len(np.unique(cluster))):
     index = np.where(cluster==(i+1))[0]
+    cluster_dict['cluster' + str(i)] = people.iloc[index].values
     x = final_stance[index]
     y = diversity[index]
     plot_num = 331+i
     plt.subplot(plot_num)
     plt.plot(x,y,'ro')
-    plt.axis([-1,1,0,1])
+    plt.axis([-1.5,1.5,-0.5,1.5])
 
-plt.show()
+with open('dict.csv', 'wb') as csv_file:
+    writer = csv.writer(csv_file)
+    for key, value in cluster_dict.items():
+       writer.writerow([key, value])
+
+cluster_df = pd.DataFrame.from_dict(cluster_dict, orient='index')
+cluster_df = cluster_df.transpose()
+
+cluster_df.to_csv("cluster.csv", index=False)
+
+
+#plt.show()
 
