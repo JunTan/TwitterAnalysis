@@ -28,10 +28,8 @@ import scipy.io
 from stop_words import get_stop_words
 from csv import DictReader
 
-with open("select_hashtag.csv") as f:
+with open("select_word.csv") as f:
     key_words = [row["word"].strip() for row in DictReader(f)]
-
-key_words = set(key_words)
 
 cachedStopWords = get_stop_words('english') + ["co", "http", "https", "i", "my", 
                   "our", "we", "you", "amp", "t"]
@@ -95,8 +93,8 @@ def generate_design_matrix(filenames, output_wordcnt = True):
         with open(filename, "r", encoding='utf-8', errors='ignore') as f:
             text = f.read() # Read in text from file
             text = text.replace('\r\n', ' ') # Remove newline character
-            #words = re.findall(r'\w+', text)
-            words = re.findall(r"#(\w+)", text)
+            words = re.findall(r'\w+', text)
+            #words = re.findall(r"#(\w+)", text)
             word_freq = defaultdict(int) # Frequency of all words
             for word in words:
                 word = word.lower()
@@ -135,7 +133,7 @@ file_dict['training_data'] = X
 file_dict['training_labels'] = Y
 file_dict['individual_data'] = inidividual_design_matrix
 file_dict['individual_account_order'] = [s.split('/')[2].split('.')[0] for s in inidividual_filenames]
-scipy.io.savemat('hashtag_classifier.mat', file_dict, do_compression=True)
+scipy.io.savemat('classifier.mat', file_dict, do_compression=True)
 '''
 # Important: the test_filenames must be in numerical order as that is the
 # order we will be evaluating your classifier
