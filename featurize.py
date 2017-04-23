@@ -180,7 +180,7 @@ file_dict['training_labels'] = Y
 file_dict['individual_data'] = inidividual_design_matrix
 print(len(inidividual_design_matrix))
 file_dict['individual_account_order'] = [s.split('/')[2].split('.')[0] for s in inidividual_filenames]
-scipy.io.savemat('classifier.mat', file_dict, do_compression=True)
+scipy.io.savemat('indiv_bag_of_word_count.mat', file_dict, do_compression=True)
 
 
 print("hashtag, count")
@@ -200,7 +200,7 @@ file_dict['training_data'] = X
 file_dict['training_labels'] = Y
 file_dict['individual_data'] = inidividual_design_matrix
 file_dict['individual_account_order'] = [s.split('/')[2].split('.')[0] for s in inidividual_filenames]
-scipy.io.savemat('hashtag_classifier.mat', file_dict, do_compression=True)
+scipy.io.savemat('indiv_hashtag_count.mat', file_dict, do_compression=True)
 
 
 '''
