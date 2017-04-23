@@ -29,7 +29,12 @@ from stop_words import get_stop_words
 from csv import DictReader
 
 with open("select_word.csv") as f:
-    key_words = [row["word"].strip() for row in DictReader(f)]
+    words = [row["word"].strip() for row in DictReader(f)]
+
+with open("select_hashtag.csv") as f:
+    hashtags = [row["word"].strip() for row in DictReader(f)]
+
+
 
 cachedStopWords = get_stop_words('english') + ["co", "http", "https", "i", "my", 
                   "our", "we", "you", "amp", "t"]
@@ -72,10 +77,22 @@ def freq_and_feature(text, freq):
 # --------- Add your own feature methods ----------
 
 # Generates a feature vector
-def generate_feature_vector(text, freq):
+def generate_feature_vector_word(text, freq):
     feature = []
     
-    for key_word in key_words:
+    for key_word in words:
+        feature.append(freq_feature(text, freq, key_word))
+
+    # --------- Add your own features here ---------
+    # Make sure type is int or float
+    
+    return feature
+
+# Generates a feature vector
+def generate_feature_vector_hashtag(text, freq):
+    feature = []
+    
+    for key_word in hashtags:
         feature.append(freq_feature(text, freq, key_word))
 
     # --------- Add your own features here ---------
@@ -103,7 +120,36 @@ def generate_design_matrix(filenames, output_wordcnt = True):
                     whole_freq[word] += 1
 
             # Create a feature vector
-            feature_vector = generate_feature_vector(text, word_freq)
+            feature_vector = generate_feature_vector_word(text, word_freq)
+            design_matrix.append(feature_vector)
+    
+    if output_wordcnt:
+        d = Counter(whole_freq)
+        # Create a feature vector
+        for k, v in d.most_common(100):
+            print (k, ",", v)
+    
+    return design_matrix
+
+def generate_design_matrix_hashtag(filenames, output_wordcnt = True):
+    design_matrix = []
+    whole_freq = defaultdict(int)
+
+    for filename in filenames:
+        with open(filename, "r", encoding='utf-8', errors='ignore') as f:
+            text = f.read() # Read in text from file
+            text = text.replace('\r\n', ' ') # Remove newline character
+            #words = re.findall(r'\w+', text)
+            words = re.findall(r"#(\w+)", text)
+            word_freq = defaultdict(int) # Frequency of all words
+            for word in words:
+                word = word.lower()
+                word_freq[word] += 1
+                if word not in cachedStopWords:
+                    whole_freq[word] += 1
+
+            # Create a feature vector
+            feature_vector = generate_feature_vector_hashtag(text, word_freq)
             design_matrix.append(feature_vector)
 
     if output_wordcnt:
@@ -116,7 +162,7 @@ def generate_design_matrix(filenames, output_wordcnt = True):
 # ************** Script starts here **************
 # DO NOT MODIFY ANYTHING BELOW
 
-print("hashtage, count")
+print("word, count")
 prolife_filenames = glob.glob(BASE_DIR + PROLIFE_DIR + '*.txt')
 prolife_design_matrix = generate_design_matrix(prolife_filenames)
 
@@ -132,8 +178,31 @@ file_dict = {}
 file_dict['training_data'] = X
 file_dict['training_labels'] = Y
 file_dict['individual_data'] = inidividual_design_matrix
+print(len(inidividual_design_matrix))
 file_dict['individual_account_order'] = [s.split('/')[2].split('.')[0] for s in inidividual_filenames]
 scipy.io.savemat('classifier.mat', file_dict, do_compression=True)
+
+
+print("hashtag, count")
+prolife_filenames = glob.glob(BASE_DIR + PROLIFE_DIR + '*.txt')
+prolife_design_matrix = generate_design_matrix_hashtag(prolife_filenames)
+
+prochoice_filenames = glob.glob(BASE_DIR + PROCHOICE_DIR + '*.txt')
+prochoice_design_matrix = generate_design_matrix_hashtag(prochoice_filenames)
+
+inidividual_filenames = glob.glob(BASE_DIR + INDIVIDUAL_DIR + '*.txt')
+inidividual_design_matrix = generate_design_matrix_hashtag(inidividual_filenames, False)
+
+X = prolife_design_matrix + prochoice_design_matrix
+Y = [1]*len(prolife_design_matrix) + [0]*len(prochoice_design_matrix)
+file_dict = {}
+file_dict['training_data'] = X
+file_dict['training_labels'] = Y
+file_dict['individual_data'] = inidividual_design_matrix
+file_dict['individual_account_order'] = [s.split('/')[2].split('.')[0] for s in inidividual_filenames]
+scipy.io.savemat('hashtag_classifier.mat', file_dict, do_compression=True)
+
+
 '''
 # Important: the test_filenames must be in numerical order as that is the
 # order we will be evaluating your classifier
