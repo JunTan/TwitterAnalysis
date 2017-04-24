@@ -180,6 +180,8 @@ file_dict['training_labels'] = Y
 file_dict['individual_data'] = inidividual_design_matrix
 print(len(inidividual_design_matrix))
 file_dict['individual_account_order'] = [s.split('/')[2].split('.')[0] for s in inidividual_filenames]
+file_dict['known_account_order'] = [s.split('/')[2].split('.')[0] for s in prolife_filenames] +\
+                                   [s.split('/')[2].split('.')[0] for s in prochoice_filenames]
 scipy.io.savemat('word_vec.mat', file_dict, do_compression=True)
 
 
@@ -200,6 +202,8 @@ file_dict['training_data'] = X
 file_dict['training_labels'] = Y
 file_dict['individual_data'] = inidividual_design_matrix
 file_dict['individual_account_order'] = [s.split('/')[2].split('.')[0] for s in inidividual_filenames]
+file_dict['known_account_order'] = [s.split('/')[2].split('.')[0] for s in prolife_filenames] +\
+                                   [s.split('/')[2].split('.')[0] for s in prochoice_filenames]
 scipy.io.savemat('hashtag_vec.mat', file_dict, do_compression=True)
 
 
